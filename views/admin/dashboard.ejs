@@ -1,53 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | NUPAC</title>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 p-8">
-  <h2 class="text-center font-bold text-3xl text-indigo-600 mb-6">Admin Dashboard</h2>
-<%- include('../partials/navbar') %>
-  <div class="flex gap-3 mb-6 justify-center">
-    <a href="/admin/course/new" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">+ Add Course</a>
-    <a href="/admin/subject/new" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded">+ Add Subject</a>
-    <a href="/admin/logout" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded">Logout</a>
-  </div>
 
-  <h2 class="text-center font-bold text-2xl text-indigo-600 mb-4">Courses</h2>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <%- include('../partials/navbar') %>
 
-  <div class="space-y-4">
-    <% courses.forEach((course, index) => { %>
-      <div x-data="{ open: false }" class="border border-gray-200 rounded-lg shadow bg-white">
-        <!-- Header -->
-        <button 
-          @click="open = !open" 
-          class="w-full flex justify-between items-center px-4 py-3 text-left text-lg font-medium text-gray-800 hover:bg-gray-100 rounded-t-lg"
-        >
-          <span><%= course.name %> (<%= course.code %>)</span>
-          <svg :class="{'rotate-180': open}" class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
+  <!-- Main Container -->
+  <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <h2 class="text-center font-bold text-3xl text-blue-700 mb-8">Admin Dashboard</h2>
 
-        <!-- Content -->
-        <div x-show="open" x-transition class="px-4 py-3 border-t border-gray-200">
-          <p><strong>Description:</strong> <%= course.description %></p>
-          <p>
-            <a href="<%= course.pageUrl %>" target="_blank" class="text-indigo-600 hover:underline">View Course Page</a>
-          </p>
-          <form action="/admin/course/<%= course._id %>/delete" method="POST" class="mt-3">
-            <button 
-              type="submit" 
-              onclick="return confirm('Are you sure you want to delete this course? This will also remove its subjects.')" 
-              class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
-            >
-              Delete
-            </button>
-          </form>
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap justify-center gap-3 mb-10">
+      <a href="/admin/course/new"
+        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-medium transition duration-200 text-sm sm:text-base">
+        + Add Course
+      </a>
+      <a href="/admin/subject/new"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition duration-200 text-sm sm:text-base">
+        + Add Subject
+      </a>
+      <a href="/admin/logout"
+        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition duration-200 text-sm sm:text-base">
+        Logout
+      </a>
+    </div>
+
+    <!-- Courses Section -->
+    <h3 class="text-center font-semibold text-2xl text-blue-700 mb-6">Courses</h3>
+
+    <% if (courses.length === 0) { %>
+      <p class="text-center text-gray-600 italic">No courses available yet. Add one to get started!</p>
+    <% } %>
+
+    <div class="space-y-5">
+      <% courses.forEach((course) => { %>
+        <div x-data="{ open: false }"
+          class="border border-gray-200 rounded-lg shadow-sm bg-white transition hover:shadow-md">
+          
+          <!-- Header -->
+          <button @click="open = !open"
+            class="w-full flex justify-between items-center px-4 py-3 text-left text-lg font-medium text-gray-800 hover:bg-gray-100 rounded-t-lg focus:outline-none">
+            <span><%= course.name %> (<%= course.code %>)</span>
+            <svg :class="{'rotate-180': open}"
+              class="w-5 h-5 text-gray-600 transition-transform transform"
+              fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Content -->
+          <div x-show="open" x-transition
+            class="px-4 py-4 border-t border-gray-200 space-y-3 text-gray-700">
+            <p><strong>Description:</strong> <%= course.description || 'No description provided.' %></p>
+            <p>
+              <a href="<%= course.pageUrl %>" target="_blank"
+                class="text-blue-600 hover:text-blue-800 hover:underline">View Course Page</a>
+            </p>
+            <form action="/admin/course/<%= course._id %>/delete" method="POST" class="pt-2">
+              <button type="submit"
+                onclick="return confirm('Are you sure you want to delete this course? This will also remove its subjects.')"
+                class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium transition duration-200">
+                Delete
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-    <% }) %>
-  </div>
+      <% }) %>
+    </div>
+  </main>
+
+  <!-- Optional Footer -->
+  <%- include('../partials/footer') %>
 </body>
 </html>
